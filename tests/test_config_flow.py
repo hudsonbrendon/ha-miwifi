@@ -333,3 +333,28 @@ async def test_dhcp_discovery_starts_flow(hass):
     )
     assert result["type"] == FlowResultType.FORM
     assert result["step_id"] == "discovery_confirm"
+
+
+def test_dhcp_matchers_skip_phones():
+    """`redmi*`/`xiaomi*` also matched Xiaomi phones, raising discovery cards
+    for every handset on the LAN. Matchers now target router hostnames only."""
+    import json
+    from fnmatch import fnmatch
+    from pathlib import Path
+
+    manifest = json.loads(
+        (
+            Path(__file__).parent.parent
+            / "custom_components"
+            / "ha_miwifi"
+            / "manifest.json"
+        ).read_text()
+    )
+    patterns = [m["hostname"] for m in manifest["dhcp"]]
+    matches = lambda h: any(fnmatch(h, p) for p in patterns)  # noqa: E731
+
+    assert matches("miwifi-rm1800")
+    assert matches("miwifi-ra82")
+    assert matches("xiaomi-router-ra82_miap9558")
+    assert not matches("redmi-note-10")
+    assert not matches("xiaomi-13t-pro")
