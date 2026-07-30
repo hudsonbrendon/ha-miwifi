@@ -2,6 +2,22 @@
 
 All notable changes to this project are documented here.
 
+## [0.9.0]
+
+### Fixed
+- DHCP discovery no longer raises a config flow for every Xiaomi/Redmi phone on
+  the LAN. The `xiaomi*` and `redmi*` matchers caught handsets, so users ended
+  up ignoring phone "routers"; matchers are now `miwifi-*`, `xiaomi-router-*`
+  and `*xiaomi-router*`. A router advertising some other hostname can still be
+  added manually from **Add integration**.
+
+### Changed
+- Requires `python-xiaomi-miwifi` 0.7.0, which raises a request timeout as
+  `MiWiFiConnectionError` instead of letting a bare `TimeoutError` escape (the
+  cause of `Timeout fetching ha_miwifi data` failing an entire poll) and gives
+  `misystem/status` and `misystem/devicelist` the longer timeout they need on a
+  main router with ~90 clients.
+
 ## [0.8.2]
 
 ### Fixed
