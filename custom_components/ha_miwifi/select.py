@@ -4,28 +4,29 @@ These write WiFi configuration (set_wifi) and RESTART the affected radio —
 disruptive by design. Exposed for completeness; never exercised against a
 live router in tests.
 """
+
 from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from xiaomi_miwifi import TXPWR_OPTIONS, WIFI_INDEX_5G, WIFI_INDEX_24G
 
-from .const import DOMAIN
-from .coordinator import XiaomiMiWiFiCoordinator
+from .coordinator import MiWiFiConfigEntry, XiaomiMiWiFiCoordinator
 from .entity import XiaomiMiWiFiEntity
+
+PARALLEL_UPDATES = 1
 
 _BAND_KEY = {WIFI_INDEX_24G: "24g", WIFI_INDEX_5G: "5g"}
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    entry: MiWiFiConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    coordinator: XiaomiMiWiFiCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     entities: list[SelectEntity] = []
     for idx in (WIFI_INDEX_24G, WIFI_INDEX_5G):
         entities.append(MiWiFiChannelSelect(coordinator, entry, idx))
@@ -42,7 +43,7 @@ class MiWiFiChannelSelect(XiaomiMiWiFiEntity, SelectEntity):
     def __init__(
         self,
         coordinator: XiaomiMiWiFiCoordinator,
-        entry: ConfigEntry,
+        entry: MiWiFiConfigEntry,
         wifi_index: int,
     ) -> None:
         super().__init__(coordinator, entry)
@@ -82,7 +83,7 @@ class MiWiFiTxPowerSelect(XiaomiMiWiFiEntity, SelectEntity):
     def __init__(
         self,
         coordinator: XiaomiMiWiFiCoordinator,
-        entry: ConfigEntry,
+        entry: MiWiFiConfigEntry,
         wifi_index: int,
     ) -> None:
         super().__init__(coordinator, entry)

@@ -1,4 +1,5 @@
 """Repair issues for the MiWiFi integration."""
+
 from __future__ import annotations
 
 from homeassistant.core import HomeAssistant, callback

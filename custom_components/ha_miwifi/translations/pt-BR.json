@@ -55,57 +55,139 @@
   },
   "entity": {
     "sensor": {
-      "client_count": { "name": "Dispositivos conectados" },
-      "clients_24g": { "name": "Clientes 2,4 GHz" },
-      "clients_5g": { "name": "Clientes 5 GHz" },
-      "mesh_node_count": { "name": "Nós mesh" },
-      "download_speed": { "name": "Velocidade de download" },
-      "upload_speed": { "name": "Velocidade de upload" },
-      "wan_ip": { "name": "IP WAN" },
-      "wan_uptime": { "name": "WAN conectado desde" },
-      "wan_download_total": { "name": "Total de download WAN" },
-      "wan_upload_total": { "name": "Total de upload WAN" },
-      "wan_max_download": { "name": "Velocidade máxima de download WAN" },
-      "wan_max_upload": { "name": "Velocidade máxima de upload WAN" },
-      "wan_type": { "name": "Tipo de WAN" },
-      "wan_gateway": { "name": "Gateway WAN" },
-      "channel_24g": { "name": "Canal 2,4 GHz" },
-      "channel_5g": { "name": "Canal 5 GHz" },
-      "firmware_version": { "name": "Versão do firmware" },
-      "mode": { "name": "Modo de operação" },
-      "ethernet_ports": { "name": "Portas Ethernet conectadas" },
-      "country_code": { "name": "Código do país" },
-      "speedtest_download": { "name": "Velocidade de download (teste)" },
-      "speedtest_upload": { "name": "Velocidade de upload (teste)" },
-      "wan_dns": { "name": "DNS WAN" },
-      "port_forwards": { "name": "Regras de redirecionamento de porta" },
-      "dhcp_leasetime": { "name": "Tempo de concessão DHCP" },
-      "timezone": { "name": "Fuso horário" }
+      "client_count": {
+        "name": "Dispositivos conectados"
+      },
+      "clients_24g": {
+        "name": "Clientes 2,4 GHz"
+      },
+      "clients_5g": {
+        "name": "Clientes 5 GHz"
+      },
+      "mesh_node_count": {
+        "name": "Nós mesh"
+      },
+      "download_speed": {
+        "name": "Velocidade de download"
+      },
+      "upload_speed": {
+        "name": "Velocidade de upload"
+      },
+      "wan_ip": {
+        "name": "IP WAN"
+      },
+      "wan_uptime": {
+        "name": "WAN conectado desde"
+      },
+      "wan_download_total": {
+        "name": "Total de download WAN"
+      },
+      "wan_upload_total": {
+        "name": "Total de upload WAN"
+      },
+      "wan_max_download": {
+        "name": "Velocidade máxima de download WAN"
+      },
+      "wan_max_upload": {
+        "name": "Velocidade máxima de upload WAN"
+      },
+      "wan_type": {
+        "name": "Tipo de WAN"
+      },
+      "wan_gateway": {
+        "name": "Gateway WAN"
+      },
+      "channel_24g": {
+        "name": "Canal 2,4 GHz"
+      },
+      "channel_5g": {
+        "name": "Canal 5 GHz"
+      },
+      "firmware_version": {
+        "name": "Versão do firmware"
+      },
+      "mode": {
+        "name": "Modo de operação"
+      },
+      "ethernet_ports": {
+        "name": "Portas Ethernet conectadas"
+      },
+      "country_code": {
+        "name": "Código do país"
+      },
+      "speedtest_download": {
+        "name": "Velocidade de download (teste)"
+      },
+      "speedtest_upload": {
+        "name": "Velocidade de upload (teste)"
+      },
+      "wan_dns": {
+        "name": "DNS WAN"
+      },
+      "port_forwards": {
+        "name": "Regras de redirecionamento de porta"
+      },
+      "dhcp_leasetime": {
+        "name": "Tempo de concessão DHCP"
+      },
+      "timezone": {
+        "name": "Fuso horário"
+      }
     },
     "binary_sensor": {
-      "wan_link": { "name": "Link WAN" },
-      "led": { "name": "LED de status" },
-      "dmz": { "name": "DMZ" },
-      "ddns": { "name": "DDNS" },
-      "ipv6": { "name": "IPv6" }
+      "wan_link": {
+        "name": "Link WAN"
+      },
+      "led": {
+        "name": "LED de status"
+      },
+      "dmz": {
+        "name": "DMZ"
+      },
+      "ddns": {
+        "name": "DDNS"
+      },
+      "ipv6": {
+        "name": "IPv6"
+      }
     },
     "update": {
-      "firmware": { "name": "Firmware" }
+      "firmware": {
+        "name": "Firmware"
+      }
     },
     "select": {
-      "channel_24g": { "name": "Canal 2,4 GHz" },
-      "channel_5g": { "name": "Canal 5 GHz" },
-      "txpower_24g": { "name": "Potência do sinal 2,4 GHz" },
-      "txpower_5g": { "name": "Potência do sinal 5 GHz" }
+      "channel_24g": {
+        "name": "Canal 2,4 GHz"
+      },
+      "channel_5g": {
+        "name": "Canal 5 GHz"
+      },
+      "txpower_24g": {
+        "name": "Potência do sinal 2,4 GHz"
+      },
+      "txpower_5g": {
+        "name": "Potência do sinal 5 GHz"
+      }
     },
     "switch": {
-      "wifi_5g": { "name": "Wi-Fi 5 GHz" },
-      "wifi_24g": { "name": "Wi-Fi 2,4 GHz" },
-      "qos": { "name": "QoS" }
+      "wifi_5g": {
+        "name": "Wi-Fi 5 GHz"
+      },
+      "wifi_24g": {
+        "name": "Wi-Fi 2,4 GHz"
+      },
+      "qos": {
+        "name": "QoS"
+      }
     },
     "button": {
-      "reboot": { "name": "Reiniciar" },
-      "speed_test": { "name": "Executar teste de velocidade" }
+      "reboot": {
+        "name": "Reiniciar"
+      },
+      "speed_test": {
+        "name": "Executar teste de velocidade"
+      }
     }
   },
   "device_automation": {
@@ -132,6 +214,178 @@
     "unsupported_router": {
       "title": "Modelo de roteador não suportado",
       "description": "O hardware do seu roteador ({hardware}) não está na lista de modelos suportados. Algumas entidades podem estar ausentes ou reportar valores incorretos."
+    }
+  },
+  "services": {
+    "add_dhcp_reservation": {
+      "name": "Adicionar reserva DHCP",
+      "description": "Reserva um IP para um endereço MAC.",
+      "fields": {
+        "entry_id": {
+          "name": "Roteador",
+          "description": "Roteador alvo."
+        },
+        "mac": {
+          "name": "MAC",
+          "description": "Endereço MAC do dispositivo."
+        },
+        "ip": {
+          "name": "IP",
+          "description": "IP a reservar."
+        },
+        "name": {
+          "name": "Nome",
+          "description": "Rótulo da reserva."
+        }
+      }
+    },
+    "remove_dhcp_reservation": {
+      "name": "Remover reserva DHCP",
+      "description": "Remove uma reserva pelo MAC.",
+      "fields": {
+        "entry_id": {
+          "name": "Roteador",
+          "description": "Roteador alvo."
+        },
+        "mac": {
+          "name": "MAC",
+          "description": "Endereço MAC do dispositivo."
+        }
+      }
+    },
+    "block_device": {
+      "name": "Bloquear dispositivo",
+      "description": "Bloqueia o acesso de um dispositivo à rede pelo MAC.",
+      "fields": {
+        "entry_id": {
+          "name": "Roteador",
+          "description": "Roteador alvo."
+        },
+        "mac": {
+          "name": "MAC",
+          "description": "Endereço MAC do dispositivo."
+        }
+      }
+    },
+    "unblock_device": {
+      "name": "Desbloquear dispositivo",
+      "description": "Desbloqueia um dispositivo bloqueado anteriormente pelo MAC.",
+      "fields": {
+        "entry_id": {
+          "name": "Roteador",
+          "description": "Roteador alvo."
+        },
+        "mac": {
+          "name": "MAC",
+          "description": "Endereço MAC do dispositivo."
+        }
+      }
+    },
+    "luci_request": {
+      "name": "Requisição LuCI bruta",
+      "description": "Faz um GET somente leitura em qualquer caminho da API LuCI do MiWiFi e retorna o JSON.",
+      "fields": {
+        "entry_id": {
+          "name": "Roteador",
+          "description": "Roteador alvo."
+        },
+        "path": {
+          "name": "Caminho da API",
+          "description": "Caminho LuCI, ex.: api/misystem/router_info."
+        }
+      }
+    },
+    "run_speed_test": {
+      "name": "Executar teste de velocidade",
+      "description": "Dispara um teste de velocidade WAN no roteador. Satura a conexão por alguns instantes.",
+      "fields": {
+        "entry_id": {
+          "name": "Roteador",
+          "description": "Roteador alvo."
+        }
+      }
+    },
+    "add_port_forward": {
+      "name": "Adicionar redirecionamento de porta",
+      "description": "Adiciona uma regra de redirecionamento de porta única e a aplica.",
+      "fields": {
+        "entry_id": {
+          "name": "Roteador",
+          "description": "Roteador alvo."
+        },
+        "ip": {
+          "name": "IP interno",
+          "description": "Host da LAN que receberá o tráfego."
+        },
+        "name": {
+          "name": "Nome",
+          "description": "Rótulo da regra."
+        },
+        "proto": {
+          "name": "Protocolo",
+          "description": "1=TCP, 2=UDP, 3=TCP+UDP."
+        },
+        "source_port": {
+          "name": "Porta externa",
+          "description": "Porta do lado WAN."
+        },
+        "dest_port": {
+          "name": "Porta interna",
+          "description": "Porta do lado LAN."
+        }
+      }
+    },
+    "delete_port_forward": {
+      "name": "Excluir redirecionamento de porta",
+      "description": "Exclui uma regra de redirecionamento pela porta externa e aplica.",
+      "fields": {
+        "entry_id": {
+          "name": "Roteador",
+          "description": "Roteador alvo."
+        },
+        "source_port": {
+          "name": "Porta externa",
+          "description": "Porta do lado WAN da regra a excluir."
+        }
+      }
+    },
+    "set_dmz": {
+      "name": "Definir DMZ",
+      "description": "Encaminha todo o tráfego WAN não correspondido para um único host da LAN.",
+      "fields": {
+        "entry_id": {
+          "name": "Roteador",
+          "description": "Roteador alvo."
+        },
+        "ip": {
+          "name": "IP do host DMZ",
+          "description": "Host da LAN a expor."
+        }
+      }
+    },
+    "clear_dmz": {
+      "name": "Limpar DMZ",
+      "description": "Desativa o encaminhamento DMZ.",
+      "fields": {
+        "entry_id": {
+          "name": "Roteador",
+          "description": "Roteador alvo."
+        }
+      }
+    },
+    "set_ddns": {
+      "name": "Definir DDNS",
+      "description": "Ativa ou desativa o DNS dinâmico no roteador.",
+      "fields": {
+        "entry_id": {
+          "name": "Roteador",
+          "description": "Roteador alvo."
+        },
+        "enabled": {
+          "name": "Ativado",
+          "description": "Liga ou desliga o DDNS."
+        }
+      }
     }
   }
 }

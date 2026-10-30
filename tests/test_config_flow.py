@@ -9,14 +9,16 @@ from tests.conftest import make_status
 
 
 async def test_user_flow_creates_entry(hass: HomeAssistant, aioclient_mock):
-    with patch(
-        "custom_components.ha_miwifi.config_flow.MiWiFiClient"
-    ) as mock_client, patch(
-        "custom_components.ha_miwifi.config_flow.async_get_clientsession",
-        MagicMock(),
-    ), patch(
-        "custom_components.ha_miwifi.async_setup_entry",
-        AsyncMock(return_value=True),
+    with (
+        patch("custom_components.ha_miwifi.config_flow.MiWiFiClient") as mock_client,
+        patch(
+            "custom_components.ha_miwifi.config_flow.async_get_clientsession",
+            MagicMock(),
+        ),
+        patch(
+            "custom_components.ha_miwifi.async_setup_entry",
+            AsyncMock(return_value=True),
+        ),
     ):
         instance = mock_client.return_value
         instance.async_login = AsyncMock(return_value="tok")
@@ -41,11 +43,12 @@ async def test_user_flow_creates_entry(hass: HomeAssistant, aioclient_mock):
 async def test_user_flow_handles_auth_error(hass: HomeAssistant, aioclient_mock):
     from xiaomi_miwifi import MiWiFiAuthError
 
-    with patch(
-        "custom_components.ha_miwifi.config_flow.MiWiFiClient"
-    ) as mock_client, patch(
-        "custom_components.ha_miwifi.config_flow.async_get_clientsession",
-        MagicMock(),
+    with (
+        patch("custom_components.ha_miwifi.config_flow.MiWiFiClient") as mock_client,
+        patch(
+            "custom_components.ha_miwifi.config_flow.async_get_clientsession",
+            MagicMock(),
+        ),
     ):
         instance = mock_client.return_value
         instance.async_login = AsyncMock(side_effect=MiWiFiAuthError("bad"))
@@ -82,14 +85,18 @@ async def test_options_flow_accepts_consider_home_and_excluded_macs(hass):
 
     result = await hass.config_entries.options.async_init(entry.entry_id)
     assert result["type"] == FlowResultType.FORM
-    result2 = await hass.config_entries.options.async_configure(
-        result["flow_id"],
-        {
-            CONF_SCAN_INTERVAL: 30,
-            CONF_CONSIDER_HOME: 300,
-            CONF_EXCLUDED_MACS: "AA:BB:CC:DD:EE:FF",
-        },
-    )
+    # OptionsFlowWithReload reloads the entry on save; keep setup out of it.
+    with patch(
+        "custom_components.ha_miwifi.async_setup_entry", AsyncMock(return_value=True)
+    ):
+        result2 = await hass.config_entries.options.async_configure(
+            result["flow_id"],
+            {
+                CONF_SCAN_INTERVAL: 30,
+                CONF_CONSIDER_HOME: 300,
+                CONF_EXCLUDED_MACS: "AA:BB:CC:DD:EE:FF",
+            },
+        )
     assert result2["type"] == FlowResultType.CREATE_ENTRY
     assert result2["data"][CONF_CONSIDER_HOME] == 300
     assert result2["data"][CONF_EXCLUDED_MACS] == "AA:BB:CC:DD:EE:FF"
@@ -107,14 +114,16 @@ async def test_reauth_flow_updates_password(hass):
         },
     )
     entry.add_to_hass(hass)
-    with patch(
-        "custom_components.ha_miwifi.config_flow.MiWiFiClient"
-    ) as mc, patch(
-        "custom_components.ha_miwifi.config_flow.async_get_clientsession",
-        MagicMock(),
-    ), patch(
-        "custom_components.ha_miwifi.async_setup_entry",
-        AsyncMock(return_value=True),
+    with (
+        patch("custom_components.ha_miwifi.config_flow.MiWiFiClient") as mc,
+        patch(
+            "custom_components.ha_miwifi.config_flow.async_get_clientsession",
+            MagicMock(),
+        ),
+        patch(
+            "custom_components.ha_miwifi.async_setup_entry",
+            AsyncMock(return_value=True),
+        ),
     ):
         inst = mc.return_value
         inst.async_login = AsyncMock(return_value="tok")
@@ -141,11 +150,12 @@ async def test_reauth_flow_invalid_auth(hass):
         },
     )
     entry.add_to_hass(hass)
-    with patch(
-        "custom_components.ha_miwifi.config_flow.MiWiFiClient"
-    ) as mc, patch(
-        "custom_components.ha_miwifi.config_flow.async_get_clientsession",
-        MagicMock(),
+    with (
+        patch("custom_components.ha_miwifi.config_flow.MiWiFiClient") as mc,
+        patch(
+            "custom_components.ha_miwifi.config_flow.async_get_clientsession",
+            MagicMock(),
+        ),
     ):
         inst = mc.return_value
         inst.async_login = AsyncMock(side_effect=MiWiFiAuthError("bad"))
@@ -167,14 +177,16 @@ async def test_user_flow_sets_mac_unique_id(hass):
     from custom_components.ha_miwifi.const import CONF_PASSWORD, DOMAIN
     from tests.conftest import make_status
 
-    with patch(
-        "custom_components.ha_miwifi.config_flow.MiWiFiClient"
-    ) as mc, patch(
-        "custom_components.ha_miwifi.config_flow.async_get_clientsession",
-        MagicMock(),
-    ), patch(
-        "custom_components.ha_miwifi.async_setup_entry",
-        AsyncMock(return_value=True),
+    with (
+        patch("custom_components.ha_miwifi.config_flow.MiWiFiClient") as mc,
+        patch(
+            "custom_components.ha_miwifi.config_flow.async_get_clientsession",
+            MagicMock(),
+        ),
+        patch(
+            "custom_components.ha_miwifi.async_setup_entry",
+            AsyncMock(return_value=True),
+        ),
     ):
         inst = mc.return_value
         inst.async_login = AsyncMock(return_value="tok")
@@ -206,14 +218,16 @@ async def test_reconfigure_flow_updates_host_and_password(hass):
         },
     )
     entry.add_to_hass(hass)
-    with patch(
-        "custom_components.ha_miwifi.config_flow.MiWiFiClient"
-    ) as mc, patch(
-        "custom_components.ha_miwifi.config_flow.async_get_clientsession",
-        MagicMock(),
-    ), patch(
-        "custom_components.ha_miwifi.async_setup_entry",
-        AsyncMock(return_value=True),
+    with (
+        patch("custom_components.ha_miwifi.config_flow.MiWiFiClient") as mc,
+        patch(
+            "custom_components.ha_miwifi.config_flow.async_get_clientsession",
+            MagicMock(),
+        ),
+        patch(
+            "custom_components.ha_miwifi.async_setup_entry",
+            AsyncMock(return_value=True),
+        ),
     ):
         inst = mc.return_value
         inst.async_login = AsyncMock(return_value="tok")
@@ -244,14 +258,16 @@ async def test_reconfigure_flow_keeps_mac_unique_id(hass):
         },
     )
     entry.add_to_hass(hass)
-    with patch(
-        "custom_components.ha_miwifi.config_flow.MiWiFiClient"
-    ) as mc, patch(
-        "custom_components.ha_miwifi.config_flow.async_get_clientsession",
-        MagicMock(),
-    ), patch(
-        "custom_components.ha_miwifi.async_setup_entry",
-        AsyncMock(return_value=True),
+    with (
+        patch("custom_components.ha_miwifi.config_flow.MiWiFiClient") as mc,
+        patch(
+            "custom_components.ha_miwifi.config_flow.async_get_clientsession",
+            MagicMock(),
+        ),
+        patch(
+            "custom_components.ha_miwifi.async_setup_entry",
+            AsyncMock(return_value=True),
+        ),
     ):
         inst = mc.return_value
         inst.async_login = AsyncMock(return_value="tok")
@@ -286,14 +302,16 @@ async def test_integration_discovery_reuses_password(hass):
         },
     ).add_to_hass(hass)
 
-    with patch(
-        "custom_components.ha_miwifi.config_flow.MiWiFiClient"
-    ) as mc, patch(
-        "custom_components.ha_miwifi.config_flow.async_get_clientsession",
-        MagicMock(),
-    ), patch(
-        "custom_components.ha_miwifi.async_setup_entry",
-        AsyncMock(return_value=True),
+    with (
+        patch("custom_components.ha_miwifi.config_flow.MiWiFiClient") as mc,
+        patch(
+            "custom_components.ha_miwifi.config_flow.async_get_clientsession",
+            MagicMock(),
+        ),
+        patch(
+            "custom_components.ha_miwifi.async_setup_entry",
+            AsyncMock(return_value=True),
+        ),
     ):
         inst = mc.return_value
         inst.async_login = AsyncMock(return_value="tok")

@@ -1,5 +1,8 @@
 """System Health for MiWiFi."""
+
 from __future__ import annotations
+
+from typing import Any
 
 from homeassistant.components import system_health
 from homeassistant.core import HomeAssistant, callback
@@ -15,8 +18,10 @@ def async_register(
     register.async_register_info(_system_health_info)
 
 
-async def _system_health_info(hass: HomeAssistant) -> dict:
-    coordinators = list(hass.data.get(DOMAIN, {}).values())
+async def _system_health_info(hass: HomeAssistant) -> dict[str, Any]:
+    coordinators = [
+        entry.runtime_data for entry in hass.config_entries.async_loaded_entries(DOMAIN)
+    ]
     if not coordinators:
         return {"routers": 0}
     coord = coordinators[0]

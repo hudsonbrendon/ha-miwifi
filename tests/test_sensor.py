@@ -1,8 +1,8 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-import pytest
 from homeassistant.exceptions import HomeAssistantError
+import pytest
 
 from custom_components.ha_miwifi.binary_sensor import (
     BINARY_SENSOR_DESCRIPTIONS,
@@ -99,10 +99,8 @@ def test_uptime_sensor_reports_last_boot_timestamp():
     assert sensor._attr_unique_id == "e1_wan_uptime"
 
 
-def test_uptime_sensor_is_stable_across_polls(monkeypatch):
-    from datetime import UTC, datetime, timedelta
-
-    from custom_components.ha_miwifi import sensor as sensor_module
+def test_uptime_sensor_is_stable_across_polls(freezer):
+    from datetime import timedelta
 
     status = make_status(True)
     coordinator = SimpleNamespace(
@@ -113,14 +111,11 @@ def test_uptime_sensor_is_stable_across_polls(monkeypatch):
     entry = SimpleNamespace(entry_id="e1", title="Casa")
     sensor = MiWiFiUptimeSensor(coordinator, entry)
 
-    # Two polls with the SAME wan_uptime but utcnow advanced by a few seconds
+    # Two polls with the SAME wan_uptime but the clock advanced by a few seconds
     # must collapse to the same minute-quantized timestamp (no per-poll jitter).
-    base = datetime(2026, 6, 1, 12, 0, 5, tzinfo=UTC)
-    monkeypatch.setattr(sensor_module.dt_util, "utcnow", lambda: base)
+    freezer.move_to("2026-06-01 12:00:05+00:00")
     first = sensor.native_value
-    monkeypatch.setattr(
-        sensor_module.dt_util, "utcnow", lambda: base + timedelta(seconds=7)
-    )
+    freezer.tick(timedelta(seconds=7))
     second = sensor.native_value
 
     assert first == second
@@ -178,7 +173,8 @@ def test_radio_switch_catalog():
 
 async def test_reboot_button_calls_client(hass):
     coordinator = SimpleNamespace(
-        client=AsyncMock(), data=make_status(True),
+        client=AsyncMock(),
+        data=make_status(True),
         async_request_refresh=AsyncMock(),
         last_update_success=True,
     )
@@ -191,7 +187,8 @@ async def test_reboot_button_calls_client(hass):
 
 async def test_reboot_button_raises_on_failure(hass):
     coordinator = SimpleNamespace(
-        client=AsyncMock(), data=make_status(True),
+        client=AsyncMock(),
+        data=make_status(True),
         async_request_refresh=AsyncMock(),
         last_update_success=True,
     )
@@ -204,7 +201,8 @@ async def test_reboot_button_raises_on_failure(hass):
 
 async def test_radio_switch_turn_off_raises_on_failure(hass):
     coordinator = SimpleNamespace(
-        client=AsyncMock(), data=make_status(True),
+        client=AsyncMock(),
+        data=make_status(True),
         async_request_refresh=AsyncMock(),
         last_update_success=True,
     )
@@ -230,6 +228,7 @@ def test_v05_sensor_value_fns():
 
 def test_v05_binary_sensor_descriptions():
     from custom_components.ha_miwifi.binary_sensor import BINARY_SENSOR_DESCRIPTIONS
+
     by_key = {d.key: d for d in BINARY_SENSOR_DESCRIPTIONS}
     s = make_status(True)
     assert by_key["dmz"].value_fn(s) is True
@@ -245,8 +244,10 @@ async def test_speed_test_button_calls_client():
     from custom_components.ha_miwifi.button import MiWiFiSpeedTestButton
 
     coord = SimpleNamespace(
-        data=make_status(True), last_update_success=True,
-        client=AsyncMock(), async_request_refresh=AsyncMock(),
+        data=make_status(True),
+        last_update_success=True,
+        client=AsyncMock(),
+        async_request_refresh=AsyncMock(),
     )
     entry = SimpleNamespace(entry_id="e1", title="Casa")
     btn = MiWiFiSpeedTestButton(coord, entry)
@@ -257,8 +258,10 @@ async def test_speed_test_button_calls_client():
 
 async def test_qos_switch_on_off():
     coord = SimpleNamespace(
-        data=make_status(True), last_update_success=True,
-        client=AsyncMock(), async_request_refresh=AsyncMock(),
+        data=make_status(True),
+        last_update_success=True,
+        client=AsyncMock(),
+        async_request_refresh=AsyncMock(),
     )
     entry = SimpleNamespace(entry_id="e1", title="Casa")
     sw = MiWiFiQosSwitch(coord, entry)

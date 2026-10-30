@@ -7,6 +7,7 @@ everything: for each leaf it either links the already-configured device via
 Correlation/discovery is best-effort and is wrapped so it can NEVER break
 entry setup — any failure is logged and swallowed.
 """
+
 from __future__ import annotations
 
 import logging
@@ -14,8 +15,7 @@ import logging
 from homeassistant.config_entries import SOURCE_INTEGRATION_DISCOVERY, ConfigEntry
 from homeassistant.const import CONF_HOST
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers import discovery_flow
+from homeassistant.helpers import device_registry as dr, discovery_flow
 from xiaomi_miwifi import MiWiFiStatus
 
 from .const import DOMAIN
@@ -49,7 +49,7 @@ def async_correlate_and_discover(
     """
     try:
         _correlate_and_discover(hass, entry, status)
-    except Exception:  # noqa: BLE001 - discovery must never break setup
+    except Exception:
         _LOGGER.warning(
             "MiWiFi mesh correlation/discovery failed (non-fatal)", exc_info=True
         )

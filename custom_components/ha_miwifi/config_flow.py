@@ -1,20 +1,27 @@
 """Config flow for the MiWiFi integration."""
+
 from __future__ import annotations
 
 from typing import Any
 
-import voluptuous as vol
 from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
     ConfigFlowResult,
-    OptionsFlow,
+    OptionsFlowWithReload,
 )
 from homeassistant.const import CONF_HOST, CONF_NAME
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import format_mac
-from xiaomi_miwifi import MiWiFiAuthError, MiWiFiClient, MiWiFiConnectionError
+from homeassistant.helpers.service_info.dhcp import DhcpServiceInfo
+import voluptuous as vol
+from xiaomi_miwifi import (
+    MiWiFiAuthError,
+    MiWiFiClient,
+    MiWiFiConnectionError,
+    MiWiFiStatus,
+)
 
 from .const import (
     CONF_CONSIDER_HOME,
@@ -76,7 +83,9 @@ class XiaomiMiWiFiConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="user", data_schema=USER_SCHEMA, errors=errors
         )
 
-    async def async_step_dhcp(self, discovery_info) -> ConfigFlowResult:
+    async def async_step_dhcp(
+        self, discovery_info: DhcpServiceInfo
+    ) -> ConfigFlowResult:
         await self.async_set_unique_id(format_mac(discovery_info.macaddress))
         self._abort_if_unique_id_configured(updates={CONF_HOST: discovery_info.ip})
         self._async_abort_entries_match({CONF_HOST: discovery_info.ip})
@@ -109,17 +118,19 @@ class XiaomiMiWiFiConfigFlow(ConfigFlow, domain=DOMAIN):
                 seen.append(pwd)
         return seen
 
-    async def _validate(self, host: str, password: str):
+    async def _validate(self, host: str, password: str) -> MiWiFiStatus | None:
         """Return MiWiFiStatus on success or None on failure."""
         session = async_get_clientsession(self.hass)
         client = MiWiFiClient(host, password=password, session=session)
         try:
             await client.async_login()
             return await client.async_get_status()
-        except (MiWiFiAuthError, MiWiFiConnectionError):
+        except MiWiFiAuthError, MiWiFiConnectionError:
             return None
 
-    async def _create_discovered(self, password: str, status) -> ConfigFlowResult:
+    async def _create_discovered(
+        self, password: str, status: MiWiFiStatus
+    ) -> ConfigFlowResult:
         await self.async_set_unique_id(format_mac(status.mac))
         self._abort_if_unique_id_configured(
             updates={CONF_HOST: self._discovered[CONF_HOST]}
@@ -160,22 +171,18 @@ class XiaomiMiWiFiConfigFlow(ConfigFlow, domain=DOMAIN):
             )
         return await self._create_discovered(user_input[CONF_PASSWORD], status)
 
-    async def async_step_reauth(
-        self, entry_data: dict[str, Any]
-    ) -> ConfigFlowResult:
-        self._reauth_entry = self.hass.config_entries.async_get_entry(
-            self.context["entry_id"]
-        )
+    async def async_step_reauth(self, entry_data: dict[str, Any]) -> ConfigFlowResult:
         return await self.async_step_reauth_confirm()
 
     async def async_step_reauth_confirm(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         errors: dict[str, str] = {}
+        reauth_entry = self._get_reauth_entry()
         if user_input is not None:
             session = async_get_clientsession(self.hass)
             client = MiWiFiClient(
-                self._reauth_entry.data[CONF_HOST],
+                reauth_entry.data[CONF_HOST],
                 password=user_input[CONF_PASSWORD],
                 session=session,
             )
@@ -187,11 +194,8 @@ class XiaomiMiWiFiConfigFlow(ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_connect"
             else:
                 return self.async_update_reload_and_abort(
-                    self._reauth_entry,
-                    data={
-                        **self._reauth_entry.data,
-                        CONF_PASSWORD: user_input[CONF_PASSWORD],
-                    },
+                    reauth_entry,
+                    data_updates={CONF_PASSWORD: user_input[CONF_PASSWORD]},
                 )
         return self.async_show_form(
             step_id="reauth_confirm",
@@ -232,9 +236,7 @@ class XiaomiMiWiFiConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="reconfigure",
             data_schema=vol.Schema(
                 {
-                    vol.Required(
-                        CONF_HOST, default=entry.data[CONF_HOST]
-                    ): str,
+                    vol.Required(CONF_HOST, default=entry.data[CONF_HOST]): str,
                     vol.Required(CONF_PASSWORD): str,
                 }
             ),
@@ -244,21 +246,19 @@ class XiaomiMiWiFiConfigFlow(ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry: ConfigEntry) -> XiaomiMiWiFiOptionsFlow:
-        return XiaomiMiWiFiOptionsFlow(config_entry)
+        """Return the options flow."""
+        return XiaomiMiWiFiOptionsFlow()
 
 
-class XiaomiMiWiFiOptionsFlow(OptionsFlow):
-    """Handle scan-interval options."""
-
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        self._entry = config_entry
+class XiaomiMiWiFiOptionsFlow(OptionsFlowWithReload):
+    """Handle polling options; the entry is reloaded when they change."""
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
-        opts = self._entry.options
+        opts = self.config_entry.options
         current = opts.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
         schema = vol.Schema(
             {

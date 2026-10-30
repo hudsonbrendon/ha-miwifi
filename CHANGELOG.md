@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.8.3]
+
+### Changed
+- Modernized for Home Assistant 2026.10 / Python 3.14: the coordinator is stored in `entry.runtime_data` (no more `hass.data`), the config entry is passed to the coordinator explicitly, platforms use `AddConfigEntryEntitiesCallback` and declare `PARALLEL_UPDATES`, the options flow uses `OptionsFlowWithReload`, DHCP discovery is typed with `homeassistant.helpers.service_info.dhcp`, and the actions moved to `services.py` and are registered from `async_setup`.
+- Added `quality_scale.yaml`, `loggers` in the manifest, the missing pt-BR action translations, and a ruff configuration aligned with the other integrations. CI runs on Python 3.14 with `pytest-homeassistant-custom-component==0.13.375`. HACS minimum Home Assistant is now 2025.8.0.
+
 ## [0.8.2]
 
 ### Fixed

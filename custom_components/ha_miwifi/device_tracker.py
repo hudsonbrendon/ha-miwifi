@@ -4,17 +4,18 @@ Tracks every client that has ever been seen on the router. Once a MAC has
 been observed it keeps its tracker forever: when the device drops off the
 network the tracker reports ``not home`` instead of disappearing.
 """
+
 from __future__ import annotations
 
 from homeassistant.components.device_tracker import ScannerEntity, SourceType
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from xiaomi_miwifi import ClientDevice
 
-from .const import DOMAIN
-from .coordinator import XiaomiMiWiFiCoordinator
+from .coordinator import MiWiFiConfigEntry, XiaomiMiWiFiCoordinator
+
+PARALLEL_UPDATES = 0
 
 
 def _signal_quality(signal: int) -> str:
@@ -31,11 +32,11 @@ def _signal_quality(signal: int) -> str:
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    entry: MiWiFiConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up trackers for known clients and watch for newly-seen MACs."""
-    coordinator: XiaomiMiWiFiCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     tracked: set[str] = set()
 
     @callback
@@ -45,9 +46,7 @@ async def async_setup_entry(
             if client.mac in tracked:
                 continue
             tracked.add(client.mac)
-            new_entities.append(
-                MiWiFiDeviceTracker(coordinator, entry, client.mac)
-            )
+            new_entities.append(MiWiFiDeviceTracker(coordinator, entry, client.mac))
         if new_entities:
             async_add_entities(new_entities)
 
@@ -63,7 +62,7 @@ class MiWiFiDeviceTracker(CoordinatorEntity[XiaomiMiWiFiCoordinator], ScannerEnt
     def __init__(
         self,
         coordinator: XiaomiMiWiFiCoordinator,
-        entry: ConfigEntry,
+        entry: MiWiFiConfigEntry,
         mac: str,
     ) -> None:
         super().__init__(coordinator)
