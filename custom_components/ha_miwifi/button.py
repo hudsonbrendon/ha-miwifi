@@ -1,24 +1,25 @@
 """Reboot button for the MiWiFi integration (disruptive, exposed)."""
+
 from __future__ import annotations
 
 from homeassistant.components.button import ButtonDeviceClass, ButtonEntity
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity import EntityCategory
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import DOMAIN
-from .coordinator import XiaomiMiWiFiCoordinator
+from .coordinator import MiWiFiConfigEntry, XiaomiMiWiFiCoordinator
 from .entity import XiaomiMiWiFiEntity
+
+PARALLEL_UPDATES = 1
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    entry: MiWiFiConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    coordinator: XiaomiMiWiFiCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     async_add_entities(
         [
             MiWiFiRebootButton(coordinator, entry),
@@ -35,7 +36,7 @@ class MiWiFiRebootButton(XiaomiMiWiFiEntity, ButtonEntity):
     def __init__(
         self,
         coordinator: XiaomiMiWiFiCoordinator,
-        entry: ConfigEntry,
+        entry: MiWiFiConfigEntry,
     ) -> None:
         super().__init__(coordinator, entry)
         self._attr_unique_id = f"{entry.entry_id}_reboot"
@@ -54,7 +55,7 @@ class MiWiFiSpeedTestButton(XiaomiMiWiFiEntity, ButtonEntity):
     def __init__(
         self,
         coordinator: XiaomiMiWiFiCoordinator,
-        entry: ConfigEntry,
+        entry: MiWiFiConfigEntry,
     ) -> None:
         super().__init__(coordinator, entry)
         self._attr_unique_id = f"{entry.entry_id}_speed_test"

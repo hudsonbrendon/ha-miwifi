@@ -10,8 +10,10 @@ from tests.conftest import make_status
 
 def _coord(**kw):
     base = dict(
-        data=make_status(True), last_update_success=True,
-        client=AsyncMock(), channels_24g=["0", "1", "6", "11"],
+        data=make_status(True),
+        last_update_success=True,
+        client=AsyncMock(),
+        channels_24g=["0", "1", "6", "11"],
         channels_5g=["0", "36", "149"],
         async_request_refresh=AsyncMock(),
     )

@@ -1,4 +1,5 @@
 """Binary sensor platform for the MiWiFi integration."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -9,15 +10,15 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
     BinarySensorEntityDescription,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from xiaomi_miwifi import MiWiFiStatus
 
-from .const import DOMAIN
-from .coordinator import XiaomiMiWiFiCoordinator
+from .coordinator import MiWiFiConfigEntry, XiaomiMiWiFiCoordinator
 from .entity import XiaomiMiWiFiEntity
+
+PARALLEL_UPDATES = 0
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -62,10 +63,10 @@ BINARY_SENSOR_DESCRIPTIONS: tuple[MiWiFiBinaryDescription, ...] = (
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    entry: MiWiFiConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    coordinator: XiaomiMiWiFiCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     entities: list[BinarySensorEntity] = [
         MiWiFiBinarySensor(coordinator, entry, desc)
         for desc in BINARY_SENSOR_DESCRIPTIONS
@@ -79,7 +80,7 @@ class MiWiFiBinarySensor(XiaomiMiWiFiEntity, BinarySensorEntity):
     def __init__(
         self,
         coordinator: XiaomiMiWiFiCoordinator,
-        entry: ConfigEntry,
+        entry: MiWiFiConfigEntry,
         description: MiWiFiBinaryDescription,
     ) -> None:
         super().__init__(coordinator, entry)

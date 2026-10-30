@@ -1,12 +1,15 @@
 """DataUpdateCoordinator for the MiWiFi integration."""
+
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 import logging
-from datetime import timedelta
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.util import dt as dt_util
 from xiaomi_miwifi import (
     ClientDevice,
     MiWiFiAuthError,
@@ -17,42 +20,59 @@ from xiaomi_miwifi import (
 )
 
 from .const import (
+    CONF_CONSIDER_HOME,
+    CONF_EXCLUDED_MACS,
+    CONF_SCAN_INTERVAL,
     DEFAULT_CONSIDER_HOME,
+    DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     EVENT_DEVICE_CONNECTED,
     EVENT_DEVICE_DISCONNECTED,
     EVENT_NEW_DEVICE,
 )
+from .repairs import async_check_issues
 
 _LOGGER = logging.getLogger(__name__)
+
+type MiWiFiConfigEntry = ConfigEntry[XiaomiMiWiFiCoordinator]
 
 
 class XiaomiMiWiFiCoordinator(DataUpdateCoordinator[MiWiFiStatus]):
     """Polls the MiWiFi router and exposes a MiWiFiStatus to entities."""
 
+    config_entry: MiWiFiConfigEntry
+
     def __init__(
         self,
         hass: HomeAssistant,
+        entry: MiWiFiConfigEntry,
         client: MiWiFiClient,
-        scan_interval: int,
     ) -> None:
+        """Read the polling options from the entry and bind the client."""
         super().__init__(
             hass,
             _LOGGER,
+            config_entry=entry,
             name=DOMAIN,
-            update_interval=timedelta(seconds=scan_interval),
+            update_interval=timedelta(
+                seconds=entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+            ),
         )
         self.client = client
-        self.entry_id: str | None = None
         self.clients: list[ClientDevice] = []
         self.channels_24g: list[str] = []
         self.channels_5g: list[str] = []
-        self.consider_home: int = DEFAULT_CONSIDER_HOME
-        self.excluded_macs: set[str] = set()
-        self.last_seen: dict[str, object] = {}
+        self.consider_home: int = entry.options.get(
+            CONF_CONSIDER_HOME, DEFAULT_CONSIDER_HOME
+        )
+        raw_excl: str = entry.options.get(CONF_EXCLUDED_MACS, "")
+        self.excluded_macs: set[str] = {
+            m.strip().upper() for m in raw_excl.split(",") if m.strip()
+        }
+        self.last_seen: dict[str, datetime] = {}
         self._known_online: set[str] = set()
         self._known_macs: set[str] = set()
-        self._mac_info: dict[str, dict] = {}
+        self._mac_info: dict[str, dict[str, str]] = {}
 
     async def async_load_channels(self) -> None:
         """Fetch the available channel lists once (they don't change)."""
@@ -64,11 +84,10 @@ class XiaomiMiWiFiCoordinator(DataUpdateCoordinator[MiWiFiStatus]):
             self.channels_5g = []
 
     def _process_device_events(self) -> None:
-        from homeassistant.util import dt as dt_util
-
         now = dt_util.utcnow()
         online_now = {
-            c.mac.upper() for c in self.clients
+            c.mac.upper()
+            for c in self.clients
             if c.online and c.mac.upper() not in self.excluded_macs
         }
         for c in self.clients:
@@ -106,8 +125,5 @@ class XiaomiMiWiFiCoordinator(DataUpdateCoordinator[MiWiFiStatus]):
             self.clients = []
         if status.online:
             self._process_device_events()
-            if self.entry_id:
-                from .repairs import async_check_issues
-
-                async_check_issues(self.hass, self.entry_id, status)
+            async_check_issues(self.hass, self.config_entry.entry_id, status)
         return status

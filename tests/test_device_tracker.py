@@ -4,7 +4,6 @@ from unittest.mock import MagicMock
 from homeassistant.components.device_tracker import SourceType
 
 from custom_components.ha_miwifi import device_tracker
-from custom_components.ha_miwifi.const import DOMAIN
 from custom_components.ha_miwifi.device_tracker import (
     MiWiFiDeviceTracker,
     async_setup_entry,
@@ -19,9 +18,7 @@ def _client(mac, name, ip, online=True):
 
 
 def _entry():
-    return SimpleNamespace(
-        entry_id="e1", title="Casa", async_on_unload=lambda fn: None
-    )
+    return SimpleNamespace(entry_id="e1", title="Casa", async_on_unload=lambda fn: None)
 
 
 def _coordinator(clients):
@@ -76,7 +73,7 @@ async def test_setup_adds_trackers_and_incrementally_adds_new_mac(hass):
     c1 = _client("AA:BB:CC:DD:EE:01", "Phone", "192.168.31.10")
     coord = _coordinator([c1])
     entry = _entry()
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coord
+    entry.runtime_data = coord
 
     added: list = []
     add_cb = MagicMock(side_effect=lambda ents: added.extend(ents))
@@ -106,10 +103,18 @@ def test_tracker_exposes_telemetry_attributes():
     from xiaomi_miwifi import ClientDevice
 
     dev = ClientDevice(
-        name="tv", mac="AA:BB:CC:DD:EE:01", ip="192.168.31.9", online=True,
-        parent="", is_router=False, signal=110, band="5G",
-        download_speed=1000, upload_speed=200,
-        download_total=5_000_000, upload_total=900_000,
+        name="tv",
+        mac="AA:BB:CC:DD:EE:01",
+        ip="192.168.31.9",
+        online=True,
+        parent="",
+        is_router=False,
+        signal=110,
+        band="5G",
+        download_speed=1000,
+        upload_speed=200,
+        download_total=5_000_000,
+        upload_total=900_000,
     )
     coordinator = _coordinator([dev])
     entry = _entry()
@@ -135,9 +140,16 @@ def test_tracker_signal_quality_and_last_seen():
         MiWiFiDeviceTracker,
     )
 
-    dev = ClientDevice(name="tv", mac="AA:BB:CC:DD:EE:01", ip="192.168.31.9",
-                       online=True, parent="", is_router=False, signal=110,
-                       band="5G")
+    dev = ClientDevice(
+        name="tv",
+        mac="AA:BB:CC:DD:EE:01",
+        ip="192.168.31.9",
+        online=True,
+        parent="",
+        is_router=False,
+        signal=110,
+        band="5G",
+    )
     coordinator = _coordinator(clients=[dev])
     tracker = MiWiFiDeviceTracker(coordinator, _entry(), "AA:BB:CC:DD:EE:01")
     attrs = tracker.extra_state_attributes

@@ -1,18 +1,33 @@
 {
   "domain": "ha_miwifi",
   "name": "MiWiFi",
-  "codeowners": ["@hudsonbrendon"],
+  "codeowners": [
+    "@hudsonbrendon"
+  ],
   "config_flow": true,
   "dhcp": [
-    { "hostname": "xiaomi*" },
-    { "hostname": "miwifi*" },
-    { "hostname": "redmi*" },
-    { "hostname": "*xiaomi-router*" }
+    {
+      "hostname": "xiaomi*"
+    },
+    {
+      "hostname": "miwifi*"
+    },
+    {
+      "hostname": "redmi*"
+    },
+    {
+      "hostname": "*xiaomi-router*"
+    }
   ],
   "documentation": "https://github.com/hudsonbrendon/ha-miwifi",
   "integration_type": "hub",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/hudsonbrendon/ha-miwifi/issues",
-  "requirements": ["python-xiaomi-miwifi==0.6.0"],
-  "version": "0.8.2"
+  "loggers": [
+    "xiaomi_miwifi"
+  ],
+  "requirements": [
+    "python-xiaomi-miwifi==0.6.0"
+  ],
+  "version": "0.8.3"
 }

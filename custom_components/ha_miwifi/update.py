@@ -1,25 +1,26 @@
 """Update platform for the MiWiFi integration (info-only firmware)."""
+
 from __future__ import annotations
 
 from homeassistant.components.update import (
     UpdateDeviceClass,
     UpdateEntity,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import DOMAIN
-from .coordinator import XiaomiMiWiFiCoordinator
+from .coordinator import MiWiFiConfigEntry, XiaomiMiWiFiCoordinator
 from .entity import XiaomiMiWiFiEntity
+
+PARALLEL_UPDATES = 0
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    entry: MiWiFiConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    coordinator: XiaomiMiWiFiCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     async_add_entities([MiWiFiFirmwareUpdate(coordinator, entry)])
 
 
@@ -32,7 +33,7 @@ class MiWiFiFirmwareUpdate(XiaomiMiWiFiEntity, UpdateEntity):
     def __init__(
         self,
         coordinator: XiaomiMiWiFiCoordinator,
-        entry: ConfigEntry,
+        entry: MiWiFiConfigEntry,
     ) -> None:
         super().__init__(coordinator, entry)
         self._attr_unique_id = f"{entry.entry_id}_firmware_update"
