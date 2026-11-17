@@ -1,15 +1,17 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/hudsonbrendon/ha-miwifi/main/custom_components/ha_miwifi/brand/logo%402x.png" alt="Mi WiFi" width="280">
+  <img src="custom_components/ha_miwifi/brand/logo@2x.png" alt="MiWiFi" height="128">
 </p>
 
-<h1 align="center">MiWiFi for Home Assistant</h1>
+# MiWiFi for Home Assistant
 
-<p align="center">
-  <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Custom-41BDF5.svg" alt="HACS Custom"></a>
-  <a href="https://github.com/hudsonbrendon/ha-miwifi/actions/workflows/tests.yml"><img src="https://github.com/hudsonbrendon/ha-miwifi/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
-  <a href="https://github.com/hudsonbrendon/ha-miwifi/actions/workflows/validate.yml"><img src="https://github.com/hudsonbrendon/ha-miwifi/actions/workflows/validate.yml/badge.svg" alt="Validate"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
-</p>
+[![Tests](https://github.com/hudsonbrendon/ha-miwifi/actions/workflows/tests.yml/badge.svg)](https://github.com/hudsonbrendon/ha-miwifi/actions/workflows/tests.yml)
+[![Hassfest](https://github.com/hudsonbrendon/ha-miwifi/actions/workflows/hassfest.yml/badge.svg)](https://github.com/hudsonbrendon/ha-miwifi/actions/workflows/hassfest.yml)
+[![HACS](https://github.com/hudsonbrendon/ha-miwifi/actions/workflows/validate.yml/badge.svg)](https://github.com/hudsonbrendon/ha-miwifi/actions/workflows/validate.yml)
+[![Release](https://img.shields.io/github/v/release/hudsonbrendon/ha-miwifi?sort=semver)](https://github.com/hudsonbrendon/ha-miwifi/releases)
+[![Downloads](https://img.shields.io/github/downloads/hudsonbrendon/ha-miwifi/total)](https://github.com/hudsonbrendon/ha-miwifi/releases)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2024.12.0%2B-18BCF2?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
+[![License](https://img.shields.io/github/license/hudsonbrendon/ha-miwifi)](LICENSE)
 
 Monitor and control **Xiaomi / MiWiFi routers** in Home Assistant over the local LuCI HTTP API. Mesh-aware: add each router as its own entry and the gateway auto-discovers and links its mesh peers. Powered by [`python-xiaomi-miwifi`](https://github.com/hudsonbrendon/python-xiaomi-miwifi).
 
@@ -33,6 +35,9 @@ Monitor and control **Xiaomi / MiWiFi routers** in Home Assistant over the local
 - 🎨 Native brand icons (no home-assistant/brands PR required)
 
 ## Installation (HACS)
+
+[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=hudsonbrendon&repository=ha-miwifi&category=integration)
+[![Add integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=ha_miwifi)
 
 1. HACS → ⋮ → **Custom repositories** → add `https://github.com/hudsonbrendon/ha-miwifi`, category **Integration**.
 2. Install **MiWiFi**, restart Home Assistant.
